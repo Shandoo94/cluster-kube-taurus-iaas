@@ -1,0 +1,60 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: taurus-cluster
+  user: admin
+spec:
+  hosts:
+    - openSSH:
+        address: taurus-node-01.prod.internal
+        user: kube-admin
+        keyPath: ~/.ssh/id_ed25519
+      role: controller+worker
+      noTaints: true
+  k0s:
+    version: v1.34.1+k0s.1
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: taurus-cluster
+      spec:
+        api:
+          address: 10.10.20.20
+        network:
+          provider: kuberouter
+          controlPlaneLoadBalancing:
+            enabled: true
+            type: Keepalived
+            keepalived:
+              vrrpInstances:
+                - virtualIPs: ["10.10.20.20/24"]
+                  authPass: "taurus"
+          nodeLocalLoadBalancing:
+            enabled: true
+            type: EnvoyProxy
+        storage:
+          type: etcd
+        telemetry:
+          enabled: false
+  options:
+    wait:
+      enabled: true
+    drain:
+      enabled: true
+      gracePeriod: 2m0s
+      timeout: 5m0s
+      force: true
+      ignoreDaemonSets: true
+      deleteEmptyDirData: true
+      podSelector: ""
+      skipWaitForDeleteTimeout: 0s
+    concurrency:
+      limit: 30
+      workerDisruptionPercent: 10
+      uploads: 5
+    evictTaint:
+      enabled: false
+      taint: k0sctl.k0sproject.io/evict=true
+      effect: NoExecute
+      controllerWorkers: false

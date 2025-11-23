@@ -1,0 +1,170 @@
+#cloud-config
+autoinstall:
+  version: 1
+  source:
+    search_drivers: false
+    id: ubuntu-server
+  ssh:
+    install-server: true
+  user-data:
+    hostname: taurus-node-01
+    users:
+      - name: kube-admin
+        groups: users,admin,wheel,sudo
+        sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+        shell: /bin/bash
+        lock_passwd: true
+        ssh_authorized_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG8K+nzROsy6KdZ/2GK11uz5syNhVm9U83Rq4d4svvDR"
+    runcmd:
+      - zpool create -f -o ashift=12 -O compression=lz4 -O atime=off -O xattr=sa zfspv-pool raidz3 /dev/sda /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf /dev/sdg /dev/sdh 
+  locale: "en_US.UTF-8"
+  packages:
+    - python3
+    - zfsutils-linux
+  timezone: "Etc/UTC"
+  updates: security
+  storage:
+    config:
+
+      # disks
+      - type: disk
+        id: disk0
+        match:
+          size: largest
+        grub_device: false
+        wipe: superblock-recursive
+        preserve: false
+        ptable: gpt
+
+      # EFI partition
+      - type: partition
+        id: efi-part
+        device: disk0
+        number: 1
+        size: 1GB
+        flag: boot
+        grub_device: true
+      - type: format
+        id: efi-format
+        volume: efi-part
+        fstype: fat32
+
+      # Boot partition
+      - type: partition
+        id: boot-part
+        device: disk0
+        number: 2
+        size: 2GB
+      - type: format
+        id: boot-format
+        volume: boot-part
+        fstype: ext4
+
+      # ZFS root partition
+      - type: partition
+        id: zfs-part
+        device: disk0
+        number: 3
+        size: -1
+      - type: zpool
+        id: disk0_rpool
+        pool: rpool
+        vdevs:
+          - zfs-part
+        mountpoint: /
+        pool_properties:
+          version: null
+          ashift: 12
+          autotrim: 'on'
+        fs_properties:
+          canmount: 'off'
+          normalization: formD
+          acltype: posixacl
+          compression: lz4
+          devices: 'off'
+          dnodesize: 'auto'
+          atime: 'off'
+          sync: standard
+          xattr: sa
+      - type: zfs
+        id: disk0_rpool_container
+        pool: disk0_rpool
+        volume: /ROOT
+        properties:
+          canmount: 'off'
+          mountpoint: 'none'
+      - type: zfs
+        id: disk0_rpool_rootfs
+        pool: disk0_rpool
+        volume: /ROOT/zfsroot
+        properties:
+          canmount: 'on'
+          mountpoint: /
+
+      # ZFS dataset for /home
+      - type: zfs
+        id: disk0_rpool_home
+        pool: disk0_rpool
+        volume: /home
+        properties:
+          canmount: 'on'
+          mountpoint: /home
+
+      # ZFS dataset for /var (container)
+      - type: zfs
+        id: disk0_rpool_var
+        pool: disk0_rpool
+        volume: /var
+        properties:
+          canmount: 'off'
+          mountpoint: 'none'
+
+      # ZFS dataset for /var/log
+      - type: zfs
+        id: disk0_rpool_var_log
+        pool: disk0_rpool
+        volume: /var/log
+        properties:
+          canmount: 'on'
+          logbias: throughput
+          mountpoint: /var/log
+
+      # ZFS dataset for /var/openebs
+      # the default location for OpenEBS hostpath storage
+      - type: zfs
+        id: disk0_rpool_openebs
+        pool: disk0_rpool
+        volume: /var/openebs
+        properties:
+          canmount: 'on'
+          mountpoint: /var/openebs
+
+      # ZFS dataset for /var/lib (container)
+      - type: zfs
+        id: disk0_rpool_var_lib
+        pool: disk0_rpool
+        volume: /var/lib
+        properties:
+          canmount: 'off'
+          mountpoint: 'none'
+
+      # ZFS dataset for /var/lib/k0s
+      - type: zfs
+        id: disk0_rpool_var_lib_k0s
+        pool: disk0_rpool
+        volume: /var/lib/k0s
+        properties:
+          canmount: 'on'
+          recordsize: 16k
+          mountpoint: /var/lib/k0s
+
+      # Mounts
+      - type: mount
+        id: boot-mount
+        device: boot-format
+        path: /boot
+      - type: mount
+        id: efi-mount
+        device: efi-format
+        path: /boot/efi
