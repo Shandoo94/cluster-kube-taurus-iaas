@@ -17,7 +17,8 @@ autoinstall:
         ssh_authorized_keys:
           - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG8K+nzROsy6KdZ/2GK11uz5syNhVm9U83Rq4d4svvDR"
     runcmd:
-      - zpool create -f -o ashift=12 -O compression=lz4 -O atime=off -O xattr=sa zfspv-pool raidz3 /dev/sda /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf /dev/sdg /dev/sdh 
+      - zpool create -f -o ashift=12 -O compression=lz4 -O atime=off -O xattr=sa zfspv-pool raidz3 /dev/sda /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf /dev/sdg /dev/sdh
+      - mkdir /var/openebs/local
   locale: "en_US.UTF-8"
   packages:
     - python3
