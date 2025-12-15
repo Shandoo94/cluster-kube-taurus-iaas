@@ -1,5 +1,4 @@
-cert-manager:
-  fullnameOverride: cert-manager
+fullnameOverride: cert-manager
 
-  crds:
-    enabled: true
+crds:
+  enabled: true

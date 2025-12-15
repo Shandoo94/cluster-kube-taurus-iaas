@@ -5,6 +5,7 @@ Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages dec
 
 ## Build/Lint/Test Commands
 - Validate single YAML: `kubectl apply --dry-run=client -f <file>`
+- Validate kustomization with Helm: `kubectl kustomize <path> --enable-helm`
 - Lint all YAML: `yamllint .`
 - Test ArgoCD sync: `kubectl apply -f root-argocd-app.yaml --dry-run=server`
 
@@ -14,7 +15,18 @@ Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages dec
 - **Structure**: Apps in `apps/<namespace>/<app-name>/` with kustomization.yaml; infra configs in `infra/`
 - **Naming**: kebab-case for files/dirs (e.g., `app-config.yaml`)
 - **Kustomization**: Use `resources:` list; reference versioned external URLs (e.g., ArgoCD v3.1.7)
-- **Helm**: Use Chart.yaml with dependencies pointing to official repos when needed
+- **Helm Charts**: Use kustomization.yaml `helmCharts:` field with `valuesFile:` referencing values.yaml (NEVER use Chart.yaml wrapper charts)
+  - Example structure:
+    ```yaml
+    helmCharts:
+      - name: <chart-name>
+        repo: <repo-url>
+        version: <version>
+        releaseName: <release-name>
+        valuesFile: values.yaml
+    ```
+  - Keep values.yaml separate from kustomization.yaml (do NOT use valuesInline)
+  - ArgoCD configured with `kustomize.buildOptions: --enable-helm` globally
 - **Namespace**: Always specify in kustomization.yaml `namespace:` field or resource metadata
 - **Comments**: Add YAML comments for k0s-specific configs (security contexts, host paths, network settings)
 

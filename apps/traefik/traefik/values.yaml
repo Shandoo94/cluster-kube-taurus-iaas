@@ -1,23 +1,22 @@
-traefik:
-  fullnameOverride: traefik
+fullnameOverride: traefik
 
-  # Configure Network Ports and EntryPoints
-  # EntryPoints are the network listeners for incoming traffic.
-  ports:
-    # Defines the HTTP entry point named 'web'
-    web:
-      # Instructs this entry point to redirect all traffic to the 'websecure' entry point
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
+# Configure Network Ports and EntryPoints
+# EntryPoints are the network listeners for incoming traffic.
+ports:
+  # Defines the HTTP entry point named 'web'
+  web:
+    # Instructs this entry point to redirect all traffic to the 'websecure' entry point
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
 
-    # Defines the HTTPS entry point named 'websecure'
-    websecure:
-      port: 8443
+  # Defines the HTTPS entry point named 'websecure'
+  websecure:
+    port: 8443
 
-  service:
-    enabled: true
-    spec:
-      loadBalancerIP: 10.10.20.200
+service:
+  enabled: true
+  spec:
+    loadBalancerIP: 10.10.20.200
