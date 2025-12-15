@@ -9,3 +9,4 @@ helmCharts:
     version: v1.19.1
     releaseName: cert-manager
     valuesFile: values.yaml
+    includeCRDs: true

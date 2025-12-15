@@ -2,3 +2,9 @@ fullnameOverride: cert-manager
 
 crds:
   enabled: true
+
+# Use cert-manager namespace for leader election instead of kube-system
+# This avoids the need for cross-namespace RBAC when using kustomize namespace field
+global:
+  leaderElection:
+    namespace: cert-manager

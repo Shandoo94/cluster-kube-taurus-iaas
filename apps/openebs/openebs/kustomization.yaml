@@ -9,6 +9,7 @@ helmCharts:
     version: v4.4.0
     releaseName: openebs
     valuesFile: values.yaml
+    includeCRDs: true
 
 resources:
   - openebs-zfspv.yaml
