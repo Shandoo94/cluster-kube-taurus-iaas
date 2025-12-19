@@ -14,3 +14,4 @@ helmCharts:
 resources:
   - ./pvc.yaml
   - ./step-ca-secrets-sealed.yaml
+  - ./ingress.yaml

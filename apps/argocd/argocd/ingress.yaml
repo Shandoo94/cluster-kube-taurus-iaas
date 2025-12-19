@@ -1,3 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-server-tls
+  namespace: argocd
+spec:
+  secretName: argocd-server-tls
+  issuerRef:
+    name: step-issuer
+    kind: StepClusterIssuer
+    group: certmanager.step.sm
+  dnsNames:
+    - argocd.taurus.kube.internal
+  privateKey:
+    rotationPolicy: Always
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -21,4 +37,5 @@ spec:
         - name: argocd-server
           port: 80
           scheme: h2c
-  tls: {}
+  tls:
+    secretName: argocd-server-tls
