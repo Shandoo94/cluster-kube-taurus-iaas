@@ -1,0 +1,18 @@
+apiVersion: certmanager.step.sm/v1beta1
+kind: StepClusterIssuer
+metadata:
+  name: step-issuer
+  namespace: pki
+spec:
+  # The CA URL:
+  url: https://step-certificates.pki.svc.cluster.local
+  # The base64 encoded version of the CA root certificate in PEM format:
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJxRENDQVU2Z0F3SUJBZ0lSQUx3VVkvWGVyRXBYYlR2YnR0Y1pxWmN3Q2dZSUtvWkl6ajBFQXdJd01qRVQKTUJFR0ExVUVDaE1LU0c5dFpXeGhZaUJEUVRFYk1Ca0dBMVVFQXhNU1NHOXRaV3hoWWlCRFFTQlNiMjkwSUVOQgpNQjRYRFRJMU1USXhPVEEyTkRreU9Gb1hEVE0xTVRJeE56QTJORGt5T0Zvd01qRVRNQkVHQTFVRUNoTUtTRzl0ClpXeGhZaUJEUVRFYk1Ca0dBMVVFQXhNU1NHOXRaV3hoWWlCRFFTQlNiMjkwSUVOQk1Ga3dFd1lIS29aSXpqMEMKQVFZSUtvWkl6ajBEQVFjRFFnQUVoNWZxeHZpNUxwZys4ZEQ5bGVGSlFVT0F5MUEvR1lJNHVhOWVwWFp6dFBnQwpJYTNOMDM0N2tFa2FSa1NrNDZaVDl6dVlucUlJSGJ5bEFPZTdvZE1ReDZORk1FTXdEZ1lEVlIwUEFRSC9CQVFECkFnRUdNQklHQTFVZEV3RUIvd1FJTUFZQkFmOENBUUV3SFFZRFZSME9CQllFRkU3N013STdaOEM2STVwV3VNdFAKVlJUUUVxNWVNQW9HQ0NxR1NNNDlCQU1DQTBnQU1FVUNJUUNYUURITHBScXBpT0VsV0FXQmtrMThsUWFqeGZOcgprZ0s5RWkxWjlvd1ZSUUlnR0cyRTV1TFRIc3ZjZHlSeXVsUGVUemFmRjQrY2Zaa0JSa3JhTDFJKzVoND0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  # The provisioner name, kid, and a reference to the provisioner password secret:
+  provisioner:
+    name: admin
+    kid: J7so1gxckmpkWRdDo87LUCgyDUtDbfMCIRsi42pTE40
+    passwordRef:
+      name: step-certificates-provisioner-password
+      namespace: pki
+      key: password

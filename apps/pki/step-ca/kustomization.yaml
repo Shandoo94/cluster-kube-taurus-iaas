@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pki
+
+helmCharts:
+  - name: step-certificates
+    repo: https://smallstep.github.io/helm-charts
+    version: v1.29.0
+    releaseName: step-certificates
+    valuesFile: values.yaml
+    includeCRDs: true
+
+resources:
+  - ./pvc.yaml
+  - ./step-ca-secrets-sealed.yaml

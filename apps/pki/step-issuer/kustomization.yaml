@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pki
+
+helmCharts:
+  - name: step-issuer
+    repo: https://smallstep.github.io/helm-charts
+    version: v1.9.11
+    releaseName: step-issuer
+    valuesFile: values.yaml
+    includeCRDs: true
+
+resources:
+  - ./ClusterIssuer.yaml

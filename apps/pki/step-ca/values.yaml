@@ -1,0 +1,21 @@
+fullnameOverride: step-certificates
+
+existingSecrets:
+  enabled: true
+  ca: true
+  certsAsSecret: true
+  configAsSecret: true
+  sshHostCa: true
+  sshUserCa: true
+
+bootstrap:
+  enabled: false
+  secrets: false
+  configmaps: false
+
+inject:
+  enabled: false
+
+ca:
+  db:
+    existingClaim: step-certificates-db-pvc
