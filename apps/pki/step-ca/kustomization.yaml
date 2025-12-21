@@ -13,5 +13,11 @@ helmCharts:
 
 resources:
   - ./pvc.yaml
-  - ./step-ca-secrets-sealed.yaml
   - ./ingress.yaml
+  - ./sealed-step-certificates-ca-password.yaml
+  - ./sealed-step-certificates-certs.yaml
+  - ./sealed-step-certificates-config.yaml
+  - ./sealed-step-certificates-provisioner-password.yaml
+  - ./sealed-step-certificates-secrets.yaml
+  - ./sealed-step-certificates-ssh-host-ca-password.yaml
+  - ./sealed-step-certificates-ssh-user-ca-password.yaml
