@@ -1,0 +1,52 @@
+fullnameOverride: alloy
+
+alloy:
+  configMap:
+    content: |
+      logging {
+        level  = "info"
+        format = "logfmt"
+      }
+
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      discovery.kubernetes "nodes" {
+        role = "node"
+      }
+
+      // Collect container logs
+      loki.source.kubernetes "pods" {
+        targets    = discovery.kubernetes.pods.targets
+        forward_to = [loki.process.add_labels.receiver]
+      }
+
+      // Add standard Kubernetes labels
+      loki.process "add_labels" {
+        forward_to = [loki.write.loki.receiver]
+
+        stage.static_labels {
+          values = {
+            cluster = "taurus",
+          }
+        }
+
+        // Extract log level if present
+        stage.regex {
+          expression = "(?P<level>level|lvl|severity)=(?P<level_value>\\w+)"
+        }
+
+        stage.labels {
+          values = {
+            level = "level_value",
+          }
+        }
+      }
+
+      // Send to Loki
+      loki.write "loki" {
+        endpoint {
+          url = "http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push"
+        }
+      }

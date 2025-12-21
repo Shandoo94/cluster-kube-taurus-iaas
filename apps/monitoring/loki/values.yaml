@@ -1,0 +1,40 @@
+fullnameOverride: loki
+
+deploymentMode: SimpleScalable
+
+loki:
+  schemaConfig:
+    configs:
+      - from: "2024-04-01"
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  ingester:
+    chunk_encoding: snappy
+
+gateway:
+  affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
+
+backend:
+  replicas: 1
+  persistence:
+    storageClass: openebs-hostpath
+    size: 10Gi
+  affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
+read:
+  replicas: 1
+  affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
+write:
+  replicas: 1
+  persistence:
+    storageClass: openebs-hostpath
+    size: 10Gi
+  affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
+
+minio:
+  enabled: true
+  persistence:
+    storageClass: openebs-hostpath
