@@ -3,6 +3,10 @@
 ## Overview
 Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages declarative infrastructure with app-of-apps pattern.
 
+## Insructions
+Be conservative with the amount of shell commands you use for debugging. Thing about what information you need and then run only one command at a time.
+For access to the cluster with `kubectl`, append `--kubeconfig ~/.kube/taurus`.
+
 ## Build/Lint/Test Commands
 - Validate single YAML: `kubectl apply --dry-run=client -f <file>`
 - Validate kustomization with Helm: `kubectl kustomize <path> --enable-helm`
@@ -16,15 +20,6 @@ Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages dec
 - **Naming**: kebab-case for files/dirs (e.g., `app-config.yaml`)
 - **Kustomization**: Use `resources:` list; reference versioned external URLs (e.g., ArgoCD v3.1.7)
 - **Helm Charts**: Use kustomization.yaml `helmCharts:` field with `valuesFile:` referencing values.yaml (NEVER use Chart.yaml wrapper charts)
-  - Example structure:
-    ```yaml
-    helmCharts:
-      - name: <chart-name>
-        repo: <repo-url>
-        version: <version>
-        releaseName: <release-name>
-        valuesFile: values.yaml
-    ```
   - Keep values.yaml separate from kustomization.yaml (do NOT use valuesInline)
   - ArgoCD configured with `kustomize.buildOptions: --enable-helm` globally
 - **Namespace**: Always specify in kustomization.yaml `namespace:` field or resource metadata
@@ -45,9 +40,3 @@ Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages dec
 **Body**: Add explanation when needed, especially for:
 - Configuration fixes (explain what was wrong and why)
 **Changes**: Make atomic commits - one feature/fix per commit with clear scope
-
-## Special Notes
-- k0s cluster with built-in kube-router CNI; no external CNI installation needed
-- ApplicationSet auto-discovers `apps/*/*` pattern; namespace extracted from `path[1]`
-- Never modify generated files or `.git/`; preserve existing security contexts and capability sets
-- Root app enables selfHeal; child apps use prune for full GitOps automation
