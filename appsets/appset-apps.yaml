@@ -17,7 +17,7 @@ spec:
               directories:
                 - path: "{{ repoPath }}"
   syncPolicy:
-    preserveResourcesOnDeletion: true
+    preserveResourcesOnDeletion: false
   template:
     metadata:
       name: "{{ path[1] }}-{{ path.basenameNormalized }}"
