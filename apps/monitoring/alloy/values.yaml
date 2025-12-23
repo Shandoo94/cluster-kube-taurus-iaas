@@ -12,17 +12,45 @@ alloy:
         role = "pod"
       }
 
-      discovery.kubernetes "nodes" {
-        role = "node"
+      // Map Kubernetes metadata to Loki labels
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+
+        // Label: namespace
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          action        = "replace"
+          target_label  = "namespace"
+        }
+
+        // Label: pod
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          action        = "replace"
+          target_label  = "pod"
+        }
+
+        // Label: container
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          action        = "replace"
+          target_label  = "container"
+        }
+        
+        // Label: app (often useful)
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          action        = "replace"
+          target_label  = "app"
+        }
       }
 
-      // Collect container logs
+      // Collect container logs using the RELABELED targets
       loki.source.kubernetes "pods" {
-        targets    = discovery.kubernetes.pods.targets
+        targets    = discovery.relabel.pod_logs.output
         forward_to = [loki.process.add_labels.receiver]
       }
 
-      // Add standard Kubernetes labels
       loki.process "add_labels" {
         forward_to = [loki.write.loki.receiver]
 
@@ -44,7 +72,6 @@ alloy:
         }
       }
 
-      // Send to Loki
       loki.write "loki" {
         endpoint {
           url = "http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push"
