@@ -1,0 +1,40 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-ui-tls
+  namespace: longhorn-system
+spec:
+  secretName: longhorn-ui-tls
+  issuerRef:
+    name: step-issuer
+    kind: StepClusterIssuer
+    group: certmanager.step.sm
+  dnsNames:
+    - longhorn.taurus.kube.internal
+  privateKey:
+    rotationPolicy: Always
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-ui
+  namespace: longhorn-system
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`longhorn.taurus.kube.internal`)
+      priority: 10
+      services:
+        - name: longhorn-ui
+    - kind: Rule
+      match: Host(`longhorn.taurus.kube.internal`) && Header(`Content-Type`, `application/grpc`)
+      priority: 11
+      services:
+        - name: longhorn-ui
+          port: 80
+          scheme: h2c
+  tls:
+    secretName: longhorn-ui-tls
