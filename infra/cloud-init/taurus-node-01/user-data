@@ -22,6 +22,7 @@ autoinstall:
     - lvm2
     - xfsprogs
     - open-iscsi
+    - nfs-common
   timezone: "Etc/UTC"
   updates: security
   storage:
