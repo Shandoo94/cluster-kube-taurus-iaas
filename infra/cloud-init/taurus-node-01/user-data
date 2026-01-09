@@ -28,7 +28,7 @@ autoinstall:
   storage:
     config:
 
-      # First disk (system disk)
+      # Disks
       - type: disk
         id: disk0
         grub_device: false
@@ -36,7 +36,6 @@ autoinstall:
         preserve: false
         ptable: gpt
 
-      # Second disk (additional storage)
       - type: disk
         id: disk1
         grub_device: false
@@ -44,7 +43,7 @@ autoinstall:
         preserve: false
         ptable: gpt
 
-      # EFI partition on first disk
+      # EFI partition
       - type: partition
         id: efi-part
         device: disk0
@@ -57,7 +56,7 @@ autoinstall:
         volume: efi-part
         fstype: fat32
 
-      # Boot partition on first disk
+      # Boot partition
       - type: partition
         id: boot-part
         device: disk0
@@ -68,21 +67,20 @@ autoinstall:
         volume: boot-part
         fstype: ext4
 
-      # LVM partition on first disk (partition 3)
+      # LVM partition
       - type: partition
         id: lvm-part-disk0
         device: disk0
         number: 3
         size: -1
 
-      # LVM partition on second disk (entire disk)
       - type: partition
         id: lvm-part-disk1
         device: disk1
         number: 1
         size: -1
 
-      # LVM volume group using both partitions
+      # LVM volume group
       - type: lvm_volgroup
         id: vg0
         name: vg0
