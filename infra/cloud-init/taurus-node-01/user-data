@@ -30,6 +30,7 @@ autoinstall:
 
       # Disks
       - type: disk
+        path: /dev/nvme0n1
         id: disk0
         grub_device: false
         wipe: superblock-recursive
@@ -37,6 +38,7 @@ autoinstall:
         ptable: gpt
 
       - type: disk
+        path: /dev/nvme1n1
         id: disk1
         grub_device: false
         wipe: superblock-recursive
