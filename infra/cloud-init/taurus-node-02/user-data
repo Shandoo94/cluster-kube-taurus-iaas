@@ -1,0 +1,115 @@
+#cloud-config
+autoinstall:
+  version: 1
+  source:
+    search_drivers: false
+    id: ubuntu-server
+  ssh:
+    install-server: true
+  user-data:
+    hostname: taurus-node-02
+    users:
+      - name: kube-admin
+        groups: users,admin,wheel,sudo
+        sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+        shell: /bin/bash
+        lock_passwd: true
+        ssh_authorized_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG8K+nzROsy6KdZ/2GK11uz5syNhVm9U83Rq4d4svvDR"
+  locale: "en_US.UTF-8"
+  packages:
+    - python3
+    - lvm2
+    - xfsprogs
+    - open-iscsi
+    - nfs-common
+  timezone: "Etc/UTC"
+  updates: security
+  storage:
+    config:
+
+      # First disk
+      - type: disk
+        id: disk0
+        grub_device: false
+        wipe: superblock-recursive
+        preserve: false
+        ptable: gpt
+
+      # EFI partition on first disk
+      - type: partition
+        id: efi-part
+        device: disk0
+        number: 1
+        size: 1GB
+        flag: boot
+        grub_device: true
+      - type: format
+        id: efi-format
+        volume: efi-part
+        fstype: fat32
+
+      # Boot partition on first disk
+      - type: partition
+        id: boot-part
+        device: disk0
+        number: 2
+        size: 2GB
+      - type: format
+        id: boot-format
+        volume: boot-part
+        fstype: ext4
+
+      # LVM partition on first disk (partition 3)
+      - type: partition
+        id: lvm-part-disk0
+        device: disk0
+        number: 3
+        size: -1
+
+      # LVM volume group
+      - type: lvm_volgroup
+        id: vg0
+        name: vg0
+        devices:
+          - lvm-part-disk0
+
+      # LVM logical volume for root (100GB)
+      - type: lvm_partition
+        id: rootvol
+        name: rootvol
+        volgroup: vg0
+        size: 100GB
+      - type: format
+        id: rootvol-format
+        volume: rootvol
+        fstype: xfs
+
+      # LVM logical volume for kubevol (remaining space)
+      - type: lvm_partition
+        id: kubevol
+        name: kubevol
+        volgroup: vg0
+        size: -1
+      - type: format
+        id: kubevol-format
+        volume: kubevol
+        fstype: xfs
+
+      # Mounts
+      - type: mount
+        id: root-mount
+        device: rootvol-format
+        path: /
+      - type: mount
+        id: boot-mount
+        device: boot-format
+        path: /boot
+      - type: mount
+        id: efi-mount
+        device: efi-format
+        path: /boot/efi
+      - type: mount
+        id: kubevol-mount
+        device: kubevol-format
+        path: /var/lib/longhorn
