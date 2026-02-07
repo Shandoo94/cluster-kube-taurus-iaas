@@ -1,0 +1,71 @@
+- name: Maintain node state (Day-2 operations)
+  hosts: k8s_nodes
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ node_hostname }}"
+      tags:
+        - hostname
+
+    - name: Ensure required packages are installed
+      ansible.builtin.apt:
+        name: "{{ required_packages }}"
+        state: present
+      tags:
+        - packages
+
+    - name: Ensure kube-admin has passwordless sudo
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/90-cloud-init-users
+        line: "{{ kube_admin_user }} ALL=(ALL) NOPASSWD:ALL"
+        create: true
+        mode: "0440"
+        validate: "visudo -cf %s"
+      tags:
+        - user
+
+    - name: Ensure SSH authorized key for kube-admin
+      ansible.posix.authorized_key:
+        user: "{{ kube_admin_user }}"
+        key: "{{ ssh_authorized_key }}"
+        state: present
+        exclusive: false
+      tags:
+        - ssh
+
+    - name: Set multipath conf
+      ansible.builtin.blockinfile:
+        path: /etc/multipath.conf
+        marker: "# {mark} ANSIBLE MANAGED - Longhorn blacklist"
+        block: |
+          blacklist {
+              devnode "^sd[a-z0-9]+"
+          }
+        create: true
+        mode: '0644'
+      notify: restart multipathd
+      tags:
+        - multipath
+
+    - name: Set timezone
+      community.general.timezone:
+        name: "{{ timezone }}"
+      tags:
+        - system
+
+    - name: Set locale
+      community.general.locale_gen:
+        name: "{{ locale }}"
+        state: present
+      tags:
+        - system
+
+  handlers:
+    - name: restart multipathd
+      ansible.builtin.systemd:
+        name: multipathd
+        state: restarted
+      failed_when: false

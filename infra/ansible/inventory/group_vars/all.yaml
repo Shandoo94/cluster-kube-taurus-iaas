@@ -1,0 +1,31 @@
+---
+# Common variables for all hosts in cluster-kube-taurus-iaas
+
+# Connection settings
+ansible_user: kube-admin
+ansible_python_interpreter: /usr/bin/python3
+ansible_become: true
+
+# SSH authorized key (from cloud-init configuration)
+ssh_authorized_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG8K+nzROsy6KdZ/2GK11uz5syNhVm9U83Rq4d4svvDR"
+
+# Required packages (from cloud-init configuration)
+required_packages:
+  - python3
+  - lvm2
+  - xfsprogs
+  - open-iscsi
+  - nfs-common
+
+# System configuration
+timezone: "Etc/UTC"
+locale: "en_US.UTF-8"
+
+# User configuration
+kube_admin_user: kube-admin
+kube_admin_groups:
+  - users
+  - admin
+  - wheel
+  - sudo
+kube_admin_shell: /bin/bash

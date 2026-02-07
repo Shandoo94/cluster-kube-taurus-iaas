@@ -1,0 +1,10 @@
+all:
+  children:
+    k8s_nodes:
+      hosts:
+        taurus-node-01:
+          ansible_host: taurus-node-01.prod.internal
+          node_hostname: taurus-node-01
+        taurus-node-02:
+          ansible_host: taurus-node-02.prod.internal
+          node_hostname: taurus-node-02
