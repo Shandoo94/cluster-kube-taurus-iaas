@@ -3,6 +3,8 @@ fullnameOverride: loki
 deploymentMode: SimpleScalable
 
 loki:
+  commonConfig:
+    replication_factor: 2
   schemaConfig:
     configs:
       - from: "2024-04-01"
@@ -14,21 +16,25 @@ loki:
           period: 24h
   ingester:
     chunk_encoding: snappy
+  querier:
+    max_concurrent: 4
+  query_scheduler:
+    use_scheduler_ring: true
 
 gateway:
   affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
 
 backend:
-  replicas: 1
+  replicas: 2
   persistence:
     storageClass: longhorn-1-replica
     size: 10Gi
   affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
 read:
-  replicas: 1
+  replicas: 2
   affinity: null # Allow scheduling on single-node cluster by removing hard anti-affinity
 write:
-  replicas: 1
+  replicas: 2
   persistence:
     storageClass: longhorn-1-replica
     size: 10Gi
