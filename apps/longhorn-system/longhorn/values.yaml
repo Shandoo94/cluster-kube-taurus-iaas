@@ -1,0 +1,14 @@
+fullnameOverride: longhorn
+
+service:
+  ui:
+    type: ClusterIP
+
+persistence:
+  defaultClass: false
+
+preUpgradeChecker:
+  jobEnabled: false
+
+csi:
+  kubeletRootDir: /var/lib/k0s/kubelet

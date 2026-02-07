@@ -7,7 +7,7 @@ autoinstall:
   ssh:
     install-server: true
   user-data:
-    hostname: taurus-node-01
+    hostname: taurus-node-02
     users:
       - name: kube-admin
         groups: users,admin,wheel,sudo
@@ -28,7 +28,7 @@ autoinstall:
   storage:
     config:
 
-      # Disks
+      # First disk
       - type: disk
         path: /dev/nvme0n1
         id: disk0
@@ -37,15 +37,7 @@ autoinstall:
         preserve: false
         ptable: gpt
 
-      - type: disk
-        path: /dev/nvme1n1
-        id: disk1
-        grub_device: false
-        wipe: superblock-recursive
-        preserve: false
-        ptable: gpt
-
-      # EFI partition
+      # EFI partition on first disk
       - type: partition
         id: efi-part
         device: disk0
@@ -58,7 +50,7 @@ autoinstall:
         volume: efi-part
         fstype: fat32
 
-      # Boot partition
+      # Boot partition on first disk
       - type: partition
         id: boot-part
         device: disk0
@@ -69,17 +61,11 @@ autoinstall:
         volume: boot-part
         fstype: ext4
 
-      # LVM partition
+      # LVM partition on first disk (partition 3)
       - type: partition
         id: lvm-part-disk0
         device: disk0
         number: 3
-        size: -1
-
-      - type: partition
-        id: lvm-part-disk1
-        device: disk1
-        number: 1
         size: -1
 
       # LVM volume group
@@ -88,7 +74,6 @@ autoinstall:
         name: vg0
         devices:
           - lvm-part-disk0
-          - lvm-part-disk1
 
       # LVM logical volume for root (100GB)
       - type: lvm_partition

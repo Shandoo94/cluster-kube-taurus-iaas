@@ -11,8 +11,14 @@ spec:
         keyPath: ~/.ssh/id_ed25519
       role: controller+worker
       noTaints: true
+    - openSSH:
+        address: taurus-node-02.prod.internal
+        user: kube-admin
+        keyPath: ~/.ssh/id_ed25519
+      role: worker
+      noTaints: true
   k0s:
-    version: v1.34.1+k0s.1
+    version: v1.34.3+k0s.0
     config:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: ClusterConfig

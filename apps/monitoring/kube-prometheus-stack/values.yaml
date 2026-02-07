@@ -3,7 +3,7 @@ fullnameOverride: kube-prometheus-stack
 grafana:
   persistence:
     enabled: true
-    storageClassName: openebs-hostpath
+    storageClassName: longhorn-1-replica
 
   admin:
     existingSecret: grafana-admin-login

@@ -10,7 +10,6 @@ For access to the cluster with `kubectl`, append `--kubeconfig ~/.kube/taurus`.
 ## Build/Lint/Test Commands
 - Validate single YAML: `kubectl apply --dry-run=client -f <file>`
 - Validate kustomization with Helm: `kubectl kustomize <path> --enable-helm`
-- Lint all YAML: `yamllint .`
 - Test ArgoCD sync: `kubectl apply -f root-argocd-app.yaml --dry-run=server`
 
 ## Code Style & Conventions
