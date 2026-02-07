@@ -6,6 +6,7 @@ Kubernetes GitOps repository using k0s with built-in CNI and ArgoCD. Manages dec
 ## Insructions
 Be conservative with the amount of shell commands you use for debugging. Thing about what information you need and then run only one command at a time.
 For access to the cluster with `kubectl`, append `--kubeconfig ~/.kube/taurus`.
+You are not allowed to look up secrets.
 
 ## Build/Lint/Test Commands
 - Validate single YAML: `kubectl apply --dry-run=client -f <file>`
