@@ -45,7 +45,7 @@
               devnode "^sd[a-z0-9]+"
           }
         create: true
-        mode: '0644'
+        mode: "0644"
       notify: restart multipathd
       tags:
         - multipath
@@ -60,6 +60,19 @@
       community.general.locale_gen:
         name: "{{ locale }}"
         state: present
+      tags:
+        - system
+
+    - name: Increase fs.inotify limits for Kubernetes
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        reload: yes
+        sysctl_file: /etc/sysctl.d/99-k8s-inotify.conf
+      loop:
+        - { name: "fs.inotify.max_user_instances", value: "8192" }
+        - { name: "fs.inotify.max_user_watches", value: "524288" }
       tags:
         - system
 
