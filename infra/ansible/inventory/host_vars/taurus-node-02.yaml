@@ -1,0 +1,3 @@
+host_packages:
+  - vulkan-tools
+  - mesa-vulkan-drivers

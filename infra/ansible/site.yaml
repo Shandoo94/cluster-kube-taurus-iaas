@@ -17,6 +17,13 @@
       tags:
         - packages
 
+    - name: Ensure host packages are installed
+      ansible.builtin.apt:
+        name: "{{ host_packages }}"
+        state: present
+      tags:
+        - packages
+
     - name: Ensure kube-admin has passwordless sudo
       ansible.builtin.lineinfile:
         path: /etc/sudoers.d/90-cloud-init-users
